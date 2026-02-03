@@ -4,6 +4,7 @@
 #include "physics/Body.h"
 #include "physics/Forces.h"
 #include "physics/Integrator.h"
+#include "physics/Simulation.h"
 
 TEST_CASE("Gravity accelerates downward") {
     Body b{{0.0, 0.0}, {0.0, 0.0}, 1.0};
@@ -40,4 +41,32 @@ TEST_CASE("Drag opposes velocity") {
 
     REQUIRE(F.x == Catch::Approx(-5.0));
     REQUIRE(F.y == Catch::Approx(0.0));
+}
+
+TEST_CASE("Simulation time advances by fixed timestep") {
+    Simulation sim(9.81, 0.0, 0.1);
+    Body b{{0,0}, {0,0}, 1.0};
+
+    sim.step(b);
+    sim.step(b);
+
+    REQUIRE(sim.time() == Catch::Approx(0.2));
+}
+
+TEST_CASE("Projectile falls under gravity in simulation") {
+    Simulation sim(9.81, 0.0, 0.1);
+    Body b{{0,10}, {0,0}, 1.0};
+
+    sim.step(b);
+
+    REQUIRE(b.position.y < 10.0);
+}
+
+TEST_CASE("Drag reduces horizontal velocity") {
+    Simulation sim(9.81, 0.5, 0.1);
+    Body b{{0,0}, {10,0}, 1.0};
+
+    sim.step(b);
+
+    REQUIRE(b.velocity.x < 10.0);
 }
