@@ -52,6 +52,15 @@ target_link_libraries(tests
 )
 
 # -----------------------------
+# Main executable
+# -----------------------------
+add_executable(sim_runner
+    src/main.cpp
+)
+
+target_include_directories(sim_runner PRIVATE src)
+
+# -----------------------------
 # Compiler warnings
 # -----------------------------
 if (MSVC)

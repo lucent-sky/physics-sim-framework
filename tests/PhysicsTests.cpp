@@ -1,10 +1,12 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <filesystem>
 
 #include "physics/Body.h"
 #include "physics/Forces.h"
 #include "physics/Integrator.h"
 #include "physics/Simulation.h"
+#include "io/CsvLogger.h"
 
 TEST_CASE("Gravity accelerates downward") {
     Body b{{0.0, 0.0}, {0.0, 0.0}, 1.0};
@@ -69,4 +71,15 @@ TEST_CASE("Drag reduces horizontal velocity") {
     sim.step(b);
 
     REQUIRE(b.velocity.x < 10.0);
+}
+
+// NOTE: does not test correctness of logs!! only tests existence
+TEST_CASE("CSV log file is created") {
+    {
+        CsvLogger logger("test_log.csv");
+        Body b{{0,0}, {1,1}, 1.0};
+        logger.log(0.0, b);
+    }
+
+    REQUIRE(std::filesystem::exists("test_log.csv"));
 }
