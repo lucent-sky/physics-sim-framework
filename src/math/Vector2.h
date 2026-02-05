@@ -15,4 +15,8 @@ struct Vector2 {
     Vector2 operator*(double scalar) const {
         return {x * scalar, y * scalar};
     }
+
+    double lengthSquared() const {
+    return x * x + y * y;
+}
 };
