@@ -24,9 +24,9 @@ target_include_directories(simulation
         ${CMAKE_SOURCE_DIR}/src
 )
 
-# ----------------------------
-# Catch2
-# ----------------------------
+# -----------------------------
+# Catch2 (unit tests)
+# -----------------------------
 include(FetchContent)
 
 FetchContent_Declare(
@@ -51,18 +51,6 @@ target_link_libraries(tests
         Catch2::Catch2WithMain
 )
 
-# -----------------------------
-# Main executable
-# -----------------------------
-add_executable(sim_runner
-    src/main.cpp
-)
-
-target_include_directories(sim_runner PRIVATE src)
-
-# -----------------------------
-# Compiler warnings
-# -----------------------------
 if (MSVC)
     target_compile_options(tests PRIVATE /W4)
 else()
@@ -71,3 +59,40 @@ endif()
 
 enable_testing()
 add_test(NAME physics_tests COMMAND tests)
+
+# -----------------------------
+# SFML 3 (Visualization)
+# -----------------------------
+if(NOT DEFINED SFML_DIR)
+    message(FATAL_ERROR "SFML_DIR not set; set it to C:/libs/SFML-3.0.0/lib/cmake/SFML")
+endif()
+
+find_package(SFML CONFIG REQUIRED COMPONENTS Graphics Window System)
+
+# -----------------------------
+# Projectile visualization demo
+# -----------------------------
+add_executable(projectile_demo
+    apps/ProjectileDemo.cpp
+    src/viz/SfmlRenderer.cpp
+)
+
+target_include_directories(projectile_demo
+    PRIVATE
+        src
+        src/viz
+)
+
+target_link_libraries(projectile_demo
+    PRIVATE
+        simulation
+        SFML::Graphics
+        SFML::Window
+        SFML::System
+)
+
+if (MSVC)
+    target_compile_options(projectile_demo PRIVATE /W4)
+else()
+    target_compile_options(projectile_demo PRIVATE -Wall -Wextra -Wpedantic)
+endif()
